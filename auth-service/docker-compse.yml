@@ -1,0 +1,56 @@
+# Standalone compose file for developing/testing the Auth Service in
+# isolation. When integrated into the full platform, auth-db and rabbitmq
+# move into the root docker-compose.yml and this service just joins that
+# network — kept separate here so this service can be built and reviewed
+# on its own.
+version: '3.8'
+
+services:
+  auth-service:
+    build: .
+    ports:
+      - '4001:4001'
+    env_file: .env
+    environment:
+      DB_HOST: auth-db
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+    depends_on:
+      auth-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks: [ecommerce-net]
+
+  auth-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: auth_service_db
+      POSTGRES_USER: auth_user
+      POSTGRES_PASSWORD: change_me
+    volumes:
+      - auth_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U auth_user -d auth_service_db']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks: [ecommerce-net]
+
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    healthcheck:
+      test: ['CMD', 'rabbitmq-diagnostics', 'check_port_connectivity']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [ecommerce-net]
+
+networks:
+  ecommerce-net:
+    driver: bridge
+
+volumes:
+  auth_db_data:

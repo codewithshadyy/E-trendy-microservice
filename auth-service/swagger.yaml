@@ -1,0 +1,129 @@
+openapi: 3.0.3
+info:
+  title: Auth Service API
+  version: 1.0.0
+  description: Authentication and authorization microservice for the e-commerce platform.
+servers:
+  - url: /auth
+paths:
+  /register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string, format: password }
+                role: { type: string, enum: [customer, seller] }
+      responses:
+        '201': { description: User registered }
+        '409': { description: Registration conflict }
+  /login:
+    post:
+      summary: Log in with email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string, format: password }
+      responses:
+        '200': { description: Access + refresh tokens issued }
+        '401': { description: Invalid credentials }
+  /refresh:
+    post:
+      summary: Exchange a valid refresh token for a new token pair
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refreshToken]
+              properties:
+                refreshToken: { type: string }
+      responses:
+        '200': { description: New token pair issued }
+        '401': { description: Invalid, expired, or reused token }
+  /logout:
+    post:
+      summary: Revoke a refresh token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refreshToken]
+              properties:
+                refreshToken: { type: string }
+      responses:
+        '204': { description: Logged out }
+  /verify-email:
+    post:
+      summary: Verify email using a token from the UserRegistered flow
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token]
+              properties:
+                token: { type: string }
+      responses:
+        '200': { description: Email verified }
+        '400': { description: Invalid or expired token }
+  /forgot-password:
+    post:
+      summary: Request a password reset link
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email: { type: string, format: email }
+      responses:
+        '200': { description: Reset requested (always 200 to avoid email enumeration) }
+  /reset-password:
+    post:
+      summary: Reset password using a valid reset token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, newPassword]
+              properties:
+                token: { type: string }
+                newPassword: { type: string }
+      responses:
+        '200': { description: Password reset }
+        '400': { description: Invalid or expired token }
+  /me:
+    get:
+      summary: Get the current authenticated user
+      security:
+        - bearerAuth: []
+      responses:
+        '200': { description: Current user }
+        '401': { description: Missing or invalid access token }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

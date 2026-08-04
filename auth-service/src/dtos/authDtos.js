@@ -13,7 +13,7 @@ const passwordRule = joi.string()
 
 const registerSchema = joi.object({
     email:joi.string().email().required(),
-    password:passwordRule().required(),
+    password:passwordRule.required(),
     role:joi.string().valid("customer", "seller").default("customer")
 })
 
@@ -23,23 +23,23 @@ const loginSchema = joi.object({
 })
 
 const refreshSchema = joi.object({
-    refreshToken = joi.string().required()
+    refreshToken : joi.string().required()
 })
 
-const lgoutSchema = joi.object({
-    refreshToken: Joi.string().required(),
+const logoutSchema = joi.object({
+    refreshToken: joi.string().required(),
 })
 
-const verifyEmailSchema = Joi.object({
-  token: Joi.string().required(),
+const verifyEmailSchema = joi.object({
+  token: joi.string().required(),
 });
  
-const forgotPasswordSchema = Joi.object({
-  email: Joi.string().email().required(),
+const forgotPasswordSchema = joi.object({
+  email: joi.string().email().required(),
 });
 
-const resetPasswordSchema = Joi.object({
-  token: Joi.string().required(),
+const resetPasswordSchema = joi.object({
+  token: joi.string().required(),
   newPassword: passwordRule.required(),
 });
 
