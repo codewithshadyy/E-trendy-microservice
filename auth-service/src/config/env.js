@@ -17,10 +17,10 @@ module.exports = {
   db: {
     host: required('DB_HOST', 'localhost'),
     port: parseInt(process.env.DB_PORT || '5432', 10),
-    database: required('DB_NAME', 'auth_service_db'),
-    user: required('DB_USER', 'auth_user'),
-    password: required('DB_PASSWORD', 'change_me'),
-    poolMax: parseInt(process.env.DB_POOL_MAX || '10', 10),
+    database: required('DB_NAME', 'auth_service'),
+    user: required('DB_USER', 'kipson'),
+    password: required('DB_PASSWORD', '@$hadz120'),
+    poolMax: parseInt(process.env.DB_POOL_MAX ||  10),
   },
 
   jwt: {

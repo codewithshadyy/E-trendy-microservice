@@ -35,7 +35,7 @@ const verifyEmail = asyncHandler(async (req, res) => {
 
 const forgotPassword = asyncHandler(async (req, res) => {
   await authService.forgotPassword(req.body.email);
-  // Always 200 regardless of whether the email existed — see service-layer comment.
+  
   res.status(200).json({ message: 'If that email exists, a reset link has been sent' });
 });
 

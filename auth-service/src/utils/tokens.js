@@ -1,14 +1,14 @@
 const jwt = require("jsonwebtoken")
 const crypto = require("crypto")
-const  {v4:uuidv4} = require("uuid")
-const env= require("../config/env")
+// const  {v4:uuidv4} = require("uuid")
+const env = require("../config/env")
 
  function signAccessToken(user) {
 
     return jwt.sign({
         sub:user.id,
         email:user.email,
-        role:user.rol
+        role:user.role
     }, env.jwt.accessSecret, {
         expiresIn:env.jwt.accessExpiresIn
     })
@@ -36,7 +36,7 @@ function hashToken(raw){
 
 
 function newTokenFamilyId(){
-    return uuidv4()
+    return crypto.randomUUID()
 }
 
 function refreshExpiryDate() {
